@@ -60,9 +60,16 @@ To prove the old circuit was annihilated rather than bypassed, we mathematically
 
 We performed **Singular Value Decomposition (SVD)** on the attention heads' Output-Value (OV) and Query-Key (QK) weight matrices, both *before* and *after* fine-tuning. The OV circuit determines *what* information is moved, and the QK circuit determines *where* attention is paid.
 
-If you look at the SVD plots in our [repository](https://github.com/aryangoyal7/Mech-Intre-1-phase-changing-fine-tuning), a pattern emerges: the leading singular values of several heads dramatically flatten or drop. 
-*   **In grokking models**, a few massive singular values usually indicate a highly specialized rank-1/rank-2 feature extractor picking up specific Fourier frequencies. 
-*   **During fine-tuning**, the model globally destroys these cleanly separated matrices, repurposing the attention heads' rank to capture the inverted frequencies needed for subtraction. *Every single head* was fundamentally rewritten.
+Here is the visual representation of how the singular values for the 4 attention heads shifted during the phase transition:
+
+![SVD Head L0H0](https://raw.githubusercontent.com/aryangoyal7/Mech-Intre-1-phase-changing-fine-tuning/main/checkpoints/full_finetune/svd_L0H0.png)
+![SVD Head L0H1](https://raw.githubusercontent.com/aryangoyal7/Mech-Intre-1-phase-changing-fine-tuning/main/checkpoints/full_finetune/svd_L0H1.png)
+![SVD Head L0H2](https://raw.githubusercontent.com/aryangoyal7/Mech-Intre-1-phase-changing-fine-tuning/main/checkpoints/full_finetune/svd_L0H2.png)
+![SVD Head L0H3](https://raw.githubusercontent.com/aryangoyal7/Mech-Intre-1-phase-changing-fine-tuning/main/checkpoints/full_finetune/svd_L0H3.png)
+
+If you look at these SVD plots, a distinct pattern emerges: the leading singular values of several heads dramatically flatten or drop significantly. 
+*   **In grokking models**, a few massive, distinct singular values usually indicate a highly specialized rank-1/rank-2 feature extractor picking up specific Fourier frequencies. You can see this clearly in the blue "Base" model lines.
+*   **During fine-tuning**, the model globally destroys these cleanly separated matrices, repurposing the attention heads' rank to capture the inverted frequencies needed for subtraction. Look at the orange "Fine-tuned" lines—the singular values expand and flatten across the attention dimension. *Every single head* was fundamentally rewritten.
 
 ## Result 3: Finding the True Driver (DLA vs. Patching)
 
