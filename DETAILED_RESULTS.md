@@ -48,6 +48,29 @@ If the principal components (singular values) shift greatly, it signifies the st
 
 ### Head 3 (L0H3) SVD
 ![SVD L0H3](checkpoints/full_finetune/svd_L0H3.png)
+Based on the analysis code and detailed results in your workspace, here is a complete explanation of the SVD graphs generated for your mechanistic interpretability experiments:
+
+1. What's on the X and Y axes?
+When looking at the SVD (Singular Value Decomposition) line plots for the attention heads:
+
+X-axis (Index): Represents the rank / index of the singular values, sorted from largest to smallest. For a matrix of size $N \times N$, the indices go from $0$ up to $N-1$.
+Y-axis (Magnitude): Represents the actual value (magnitude) of the corresponding singular value.
+2. What do the graphs represent?
+The graphs map out the structural complexity and "rank" of the attention circuits and how they change during the phase transition from addition to subtraction.
+
+Singular values essentially measure "how much information or variance" is captured by each principal dimension of a matrix.
+A steep drop-off (few high singular values): Means the matrix is effectively "low-rank". It is relying on a few highly dominant, specialized pathways to do its job. For algorithmic tasks like modular addition, this often translates to the model using specific clean Fourier frequencies to compute the answer.
+A flatter or shifted curve: Means the computation is more distributed across many dimensions, or that the dominant features have changed in strength.
+The Comparison (Base vs. Fine-tuned): By plotting the values of the Base model (addition) against the Fine-tuned model (subtraction), the graphs visualize how the structural logic of the circuit physically shifts to overwrite the old algorithm and accommodate the new one. If the lines diverge significantly (like flattening or collapsing), it proves the head's fundamental mechanism was repurposed.
+3. Explanation of the Notations
+Here is a breakdown of the specific jargon and abbreviations used in the graphics and code:
+
+SVD (Singular Value Decomposition): A linear algebra technique used here to deconstruct the weight matrices of attention components to understand their underlying dimensions of variation.
+L[x]H[y] (e.g., L0H0, L0H1): This tells you exactly which part of the model network you're observing. L0 stands for Layer 0, and H0 stands for Attention Head 0.
+OV Circuit ($W_V W_O$): The Output-Value matrix combination. In mechanistic interpretability, this matrix determines "what" information is copied/moved from a source token to the destination token in the residual stream. It represents the actual content being processed.
+QK Circuit ($W_Q W_K^T$): The Query-Key matrix combination. This determines "where" the head will attend. It computes the attention scores (giving high scores when the query of the destination token matches the key of a specific source token) to decide which tokens are historically relevant to look at.
+Base: The state of the Transformer model after pre-training on the base modular addition task (a + b mod 113), but before any fine-tuning.
+Fine-tuned: The state of the model after the fine-tuning process on the modular subtraction task (a - b mod 113) has completed and the phase transition has occurred.
 
 ### Expanded Interpretation
 - **Collapse vs Expansion:** Notice how in some heads (like L0H0), the leading singular values of the OV circuit *flatten* out or drop during fine-tuning. For addition, the model might have relied on a few extremely strong rank-1 matrices mapping specific Fourier features. During fine-tuning, the subtraction task requires either different frequencies or a more distributed representation, softening the dominant singular components.
